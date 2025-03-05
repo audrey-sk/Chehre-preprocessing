@@ -1,0 +1,1 @@
+def crop(video, point1x, point1y, width, height): 
