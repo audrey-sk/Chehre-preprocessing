@@ -1,21 +1,24 @@
 from PIL import Image
 import numpy as np
 
-def crop(video, point1x, point1y, width, height):
+def crop(video):
+    face_coords = face_detect(video)
+    
+    if not face_coords:
+        return video  # No face detected, return original frames
+
+    x, y, w, h = face_coords
     cropped_frames = []
-    target_size = 512
-    
-    for frame in video:  # Assuming video is a list of PIL images
-        img = frame.crop((point1x, point1y, point1x + width, point1y + height))
+
+    for frame in video:
+        img = Image.fromarray(frame)  # Convert frame (NumPy) to PIL image
         
-        # Ensure square size by padding if necessary
-        new_img = Image.new("RGB", (target_size, target_size), (0, 0, 0))  # Black padding
-        img_w, img_h = img.size
+        # Crop the detected face region
+        cropped = img.crop((x, y, x + w, y + h))
         
-        offset_x = (target_size - img_w) // 2
-        offset_y = (target_size - img_h) // 2
-        new_img.paste(img, (offset_x, offset_y))
+        # Resize while maintaining aspect ratio
+        cropped = ImageOps.pad(cropped, (512, 512), color=(0, 0, 0))  # Black padding
         
-        cropped_frames.append(new_img)
-    
+        cropped_frames.append(np.array(cropped))  # Convert back to NumPy
+
     return cropped_frames
