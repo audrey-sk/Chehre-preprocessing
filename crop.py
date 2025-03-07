@@ -1,5 +1,6 @@
-from PIL import Image
+from PIL import Image, ImageOps 
 import numpy as np
+from facedetect import face_detect  
 
 def crop(video):
     face_coords = face_detect(video)

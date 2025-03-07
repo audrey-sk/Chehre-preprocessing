@@ -1,5 +1,6 @@
 from PIL import Image, ImageOps
 import numpy as np
+from retinaface import RetinaFace 
 
 def face_detect(video):
     thresh = 0.8
