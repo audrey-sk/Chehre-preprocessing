@@ -16,5 +16,4 @@ def extract_frames(video_path):
     cap.release()
     return frames
 
-video_path = "video.mp4"  # Change this to your actual video path
-frames = extract_frames(video_path)
+

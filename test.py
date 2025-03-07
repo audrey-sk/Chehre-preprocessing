@@ -8,6 +8,8 @@ from crop import crop
 from facedetect import face_detect 
 from PIL import Image 
 
+video_path = "video.mp4"  # Change this to your actual video path
+frames = extract_frames(video_path)
 cropped_frames = crop(frames)
 
 #display cropped frames as images
