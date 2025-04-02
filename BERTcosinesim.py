@@ -39,6 +39,5 @@ def word_cosine_sim(word1, word2):
 
     return similarity.item()  # Return scalar similarity score
 
-# Example usage
-sim_score = word_cosine_sim("apple", "orange")
-print("Cosine Similarity:", sim_score)
+# Example usage 
+ 
