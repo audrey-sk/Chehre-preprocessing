@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 import os 
 from BERTcosinesim import word_cosine_sim
+import matplotlib.pyplot as plt 
 
 DEFAULT_JSON_FILE = 'emojiJSON.json'
 JSON_FILE_PATH = DEFAULT_JSON_FILE
@@ -66,8 +67,50 @@ def calculate_similarity_matrix(words_list, sim_function):
         # Create pandas DataFrame for better display
     df = pd.DataFrame(similarity_matrix, index=words_list, columns=words_list)
     return df
+# Draw similarity matrix heatmap
+def plot_similarity_matrix(df,
+                           title: str = "Cosine-Similarity Matrix",
+                           cmap: str = "coolwarm",
+                           save_path: str | None = None):
+    if df.empty:
+        raise ValueError("The similarity DataFrame is empty.")
 
+    #axes 
+    n = len(df)
+    fig, ax = plt.subplots(figsize=(0.45 * n + 4, 0.45 * n + 4))
+    im = ax.imshow(df.values, cmap=cmap, vmin=0, vmax=1)
 
+    #  Axis labels 
+    ax.set_xticks(range(n))
+    ax.set_yticks(range(n))
+    ax.set_xticklabels(df.columns, rotation=45, ha="right", fontsize=8)
+    ax.set_yticklabels(df.index, fontsize=8)
+
+    # Grid lines for readability
+    ax.set_xticks([x - 0.5 for x in range(1, n)], minor=True)
+    ax.set_yticks([y - 0.5 for y in range(1, n)], minor=True)
+    ax.grid(which="minor", color="white", linewidth=0.5)
+
+    # Color bar
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.ax.set_ylabel("Cosine Similarity", rotation=-90, va="bottom")
+
+    # Titles 
+    ax.set_title(title, pad=15)
+    ax.set_xlabel("Words")
+    ax.set_ylabel("Word")
+    plt.tight_layout()
+
+    if save_path:                                 # save & close
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+        print(f"Heat-map image saved to '{save_path}'.")
+        plt.close(fig)
+    else:                                         # or show it
+        plt.show()
+
+     
+
+# Main 
 if __name__ == "__main__":
     print(f"Reading data from: {JSON_FILE_PATH}")
     extracted_words = extract_first_words(JSON_FILE_PATH)
@@ -88,12 +131,7 @@ if __name__ == "__main__":
                 output_csv_file = 'word_similarity_matrix.csv'
                 similarity_df.to_csv(output_csv_file, float_format='%.3f') # Save with 3 decimal places
                 print(f"\n--- Word Similarity Matrix saved to '{output_csv_file}' ---")
-                # Configure pandas display options for better readability
-               #pd.set_option('display.max_rows', None)
-               # pd.set_option('display.max_columns', None)
-                #pd.set_option('display.width', 1000) # Adjust width as needed
-                #pd.set_option('display.float_format', '{:.3f}'.format) # Format to 3 decimal places
-
-               # print(similarity_df)
+                plot_similarity_matrix( similarity_df, save_path="word_similarity_heatmap.png" ) 
+                
     else:
         print("Could not process emoji data due to previous errors.")
