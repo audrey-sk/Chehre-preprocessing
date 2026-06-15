@@ -1,18 +1,15 @@
 # Chehre — Multimodal Preprocessing Pipeline
 
-Preprocessing pipelines for the **Chehre** dataset, a multimodal corpus pairing
-**facial-reaction video** with **emoji-based affect labels**. This repository turns
-raw recordings and raw survey annotations into clean, model-ready inputs:
+**Chehre** is a dataset of participant reaction videos to emoji stimuli, collected for emotion-recognition research at the Rosie Lab in Simon Fraser University.
+This repository includes the preprocessing pipeline which turns
+raw recordings and survey annotations into clean, model-ready inputs:
 
-1. **Face extraction (computer vision)** — detect and crop faces from raw video into
+1. **Face extraction (Computer Vision)** — detect and crop faces from raw video into
    fixed-size frames suitable for downstream facial-expression models.
 2. **Label analysis (NLP)** — quantify how human annotators describe each emoji by
    embedding their text labels with BERT and measuring pairwise semantic
    similarity, surfacing redundant or near-synonymous labels before they reach a model.
 
-
-> "Chehre is a dataset of participant reaction videos to emoji stimuli, collected
-> for emotion-recognition research at the Rosie Lab in Simon Fraser University. 
 
 ---
 
