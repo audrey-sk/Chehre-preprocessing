@@ -12,15 +12,15 @@ raw recordings and raw survey annotations into clean, model-ready inputs:
 
 
 > "Chehre is a dataset of participant reaction videos to emoji stimuli, collected
-> for emotion-recognition research at Rosie Lab in Simon Fraser University. 
+> for emotion-recognition research at the Rosie Lab in Simon Fraser University. 
 
 ---
 
 ## Why this exists
 
 Raw multimodal data is rarely usable as-is. Reaction videos contain background,
-movement, and inconsistent framing; free-text emotion labels collected from surveys
-are noisy and full of near-duplicates ("happy", "joyful", "cheerful"). This toolkit
+movement, and inconsistent framing. The emotion text labels collected from surveys
+are noisy and full of near-duplicates ("happy", "joyful", "cheerful"). This preprocessing pipeline
 standardizes both modalities so the downstream model sees consistent, de-duplicated,
 well-cropped inputs.
 
@@ -56,7 +56,7 @@ python -m venv .venv && source .venv/bin/activate   # optional but recommended
 pip install -r requirements.txt
 ```
 
-The face pipeline uses OpenCV's bundled Haar cascade by default (no extra download).
+The Chehre pipeline uses OpenCV's bundled Haar cascade by default (no extra download).
 To use the higher-accuracy RetinaFace detector, also install the optional dependency:
 
 ```bash
@@ -81,13 +81,12 @@ python face_crop.py --input video.mp4 --output cropped_video.mp4 --save-frames f
 python face_crop.py --input video.mp4 --output cropped_video.mp4 --detector retinaface
 ```
 
-**Design choices**
 - **Default detector is Haar cascade** for zero-setup, CPU-only operation; **RetinaFace**
-  is available as an opt-in for better recall on profile/occluded faces.
+  is available as an opt-in for better recall on occluded faces.
 - **Headless-safe:** runs on a server with no display. Frame preview is opt-in
   (`--show`) rather than always-on, so it won't crash in a non-GUI environment.
 - **Graceful fallback:** if no face is detected in a frame, the crop falls back to the
-  frame center instead of failing, so the output stays temporally continuous.
+  frame center instead of failing, so the output stays continuous.
 
 ---
 
@@ -105,20 +104,19 @@ python emoji_label_similarity.py \
   --pooling mean
 ```
 
-**Output**
-- `word_similarity_matrix.csv` — an *N × N* matrix of cosine similarities between label words.
+**Outputs**
+- `word_similarity_matrix.csv` — an matrix of cosine similarities between label words.
 - a heatmap visualizing the matrix:
 
 ![Word similarity heatmap](examples/word_similarity_heatmap.png)
 
-**Design choices**
+**Features**
 - **Embed-once, compare-all:** each unique word is embedded a single time, then all
   pairwise similarities come from one normalized matrix multiply. This replaces the
   earlier approach that re-ran BERT for every word *pair* — reducing the number of model
   forward passes from roughly *N²* to *N* (a large speedup as the vocabulary grows).
 - **Configurable subword pooling:** BERT splits rare words into subword tokens
-  (`aardvark → a ##ard ##var ##k`). `--pooling mean` averages the subword embeddings
-  (a more faithful word representation); `--pooling first` keeps the original
+  (`aardvark → a ##ard ##var ##k`). `--pooling mean` averages the subword embeddings; `--pooling first` keeps the original
   first-token behavior. Both are exposed so the choice is explicit and reproducible.
 
 ---
